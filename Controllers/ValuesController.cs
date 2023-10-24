@@ -15,12 +15,11 @@ namespace ApiPhoneBook.Controllers
     [ApiController]
     public class ValuesController : Controller
     {
-        private readonly IContactData contactData;
+        
         private readonly PhoneBookContext _context;
 
-        public ValuesController(IContactData contactData, PhoneBookContext context)
+        public ValuesController( PhoneBookContext context)
         {
-           this.contactData = contactData;
            this._context = context;
         }
 

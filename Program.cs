@@ -11,7 +11,7 @@ builder.Services.AddDbContext<PhoneBookContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("PhoneBookContext")
     ?? throw new InvalidOperationException("Connection string 'PhoneBookContext' not found.")));
 
-builder.Services.AddTransient<IContactData, ContactDataApi>();
+//builder.Services.AddTransient<IContactData, ContactDataApi>();
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
