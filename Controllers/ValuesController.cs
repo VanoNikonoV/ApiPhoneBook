@@ -2,28 +2,63 @@
 using ApiPhoneBook.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using PhoneBook.Data;
 using PhoneBook.Models;
+using System.Net.Mime;
 
 namespace ApiPhoneBook.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/values")]
+    [Produces(MediaTypeNames.Application.Json)]
+    [Consumes(MediaTypeNames.Application.Json)]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class ValuesController : Controller
     {
         private readonly IContactData contactData;
+        private readonly PhoneBookContext _context;
 
-        public ValuesController(IContactData contactData)
+        public ValuesController(IContactData contactData, PhoneBookContext context)
         {
            this.contactData = contactData;
+           this._context = context;
         }
 
-        [HttpGet]
-        public ActionResult<List<IContact>> GetAll() => Data.Repository.GetAll();
+        //[HttpGet]
+        //public IActionResult GetAllContact() => View(contactData.GetAllContact());
 
-        [HttpGet("id")]
-        public ActionResult<IContact> Get(int id)
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<Contact>>> GetAllContact()
         {
-            var contact = Data.Repository.Get(id);
+            if (_context.Contact == null)
+            {
+                return Problem("Проблема с базой данных!");
+            }
+
+            return Ok(await _context.Contact.ToListAsync());
+        } 
+
+
+
+        /// <summary>
+        /// Позволяет получить данные о контакте по идентификатору
+        /// </summary>
+        /// <param name="id">Идентификатор контакта</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        [HttpGet("id")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<Contact>> GetContact(int id)
+        {
+            if (id == null || _context.Contact == null) return NotFound();
+
+            var contact = await _context.Contact.FirstOrDefaultAsync(m => m.Id == id);
+
+            //var contact = Data.Repository.Get(id);
+
+            if (id < 0) { throw new ArgumentException("Значение ниже 0", nameof(id)); }
 
             if (contact == null) return NotFound();
 
@@ -31,15 +66,15 @@ namespace ApiPhoneBook.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Contact contact) 
+        public IActionResult CreateContact(Contact contact) 
         { 
             Data.Repository.Add(contact);
 
-            return CreatedAtAction(nameof(Create), new Contact { Id = contact.Id});
+            return CreatedAtAction(nameof(CreateContact), new Contact { Id = contact.Id});
         }
 
         [HttpPut("id")]
-        public IActionResult Update(int id, Contact contact) 
+        public IActionResult UpdateContact(int id, Contact contact) 
         { 
             if (id != contact.Id) return BadRequest();
 
@@ -54,7 +89,7 @@ namespace ApiPhoneBook.Controllers
         }
 
         [HttpDelete("id")]
-        public IActionResult Delete(int id) 
+        public IActionResult DeleteContact(int id) 
         { 
             var contact = Data.Repository.Get(id);
 

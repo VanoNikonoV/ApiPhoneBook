@@ -4,9 +4,11 @@ namespace ApiPhoneBook.Interfaces
 {
     public interface IContactData
     {
-        IEnumerable<Contact> GetAll();
-        void Add(Contact contact);
-        void Update(Contact contact);
-        void Delete(int id);
+        IEnumerable<Contact> GetAllContact();
+        Contact GetContact(int id);
+        Contact CreateContact(Contact newContact);
+        void AddContact(Contact contact);
+        void UpdateContact(Contact contact);
+        void DeleteContact(int id);
     }
 }

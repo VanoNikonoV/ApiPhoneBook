@@ -14,9 +14,9 @@ namespace ApiPhoneBook.Data
             httpClient = new HttpClient();
         }
 
-        public void Add(Contact contact)
+        public void AddContact(Contact contact)
         {
-            string url = @"https://localhost:7000/api/values";
+            string url = @"https://localhost:7169/api/values";
 
             var r = httpClient.PostAsync(
                 requestUri: url,
@@ -25,23 +25,36 @@ namespace ApiPhoneBook.Data
                 ).Result;
         }
 
-        public void Delete(int id)
+        public void DeleteContact(int id)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<Contact> GetAll()
+        public IEnumerable<Contact> GetAllContact()
         {
-            string url = @"https://localhost:7000/api/values";
+            string url = @"https://localhost:7169/api/values";
 
             string json = httpClient.GetStringAsync(url).Result;
 
             return JsonConvert.DeserializeObject<IEnumerable<Contact>>(json);
         }
 
-        public void Update(Contact contact)
+        public Contact GetContact(int id) 
+        {
+            string url = @"https://localhost:7169/api/values/id";
+
+            string json = httpClient.GetStringAsync(url).Result;
+
+            return JsonConvert.DeserializeObject<Contact>(json);
+        }
+        public void UpdateContact(Contact contact)
         {
             throw new NotImplementedException();
+        }
+
+        public Contact CreateContact(Contact newContact)
+        {
+            return new Contact { };
         }
     }
 }
