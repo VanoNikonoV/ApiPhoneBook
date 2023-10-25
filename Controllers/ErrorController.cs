@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ApiPhoneBook.Controllers
 {
-    
     [ApiController]
     public class ErrorController : ControllerBase
     {

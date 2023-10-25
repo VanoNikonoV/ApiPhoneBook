@@ -1,5 +1,6 @@
 ﻿using ApiPhoneBook.Interfaces;
 using ApiPhoneBook.Models;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,7 @@ namespace ApiPhoneBook.Controllers
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<Contact>>> GetAllContact()
+        public async Task<ActionResult<IEnumerable<IContact>>> GetAllContact()
         {
             if (_context.Contact == null)
             {
@@ -37,8 +38,6 @@ namespace ApiPhoneBook.Controllers
 
             return Ok(await _context.Contact.ToListAsync());
         } 
-
-
 
         /// <summary>
         /// Позволяет получить данные о контакте по идентификатору
@@ -49,7 +48,7 @@ namespace ApiPhoneBook.Controllers
         [HttpGet("id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<Contact>> GetContact(int id)
+        public async Task<ActionResult<IContact>> GetContact(int id)
         {
             if (id == null || _context.Contact == null) return NotFound();
 
@@ -63,13 +62,37 @@ namespace ApiPhoneBook.Controllers
 
             return Ok(contact); //contact
         }
-
+        /// <summary>
+        /// Позволяет создать новый контакт
+        /// </summary>
+        /// <param name="contact">Новый контакт</param>
+        /// <returns></returns>
         [HttpPost]
-        public IActionResult CreateContact(Contact contact) 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task <ActionResult> CreateContact([Bind("FirstName,MiddleName,LastName,Telefon,Address,Description")] Contact contact) 
         { 
-            Data.Repository.Add(contact);
+            if (ModelState.IsValid) 
+            {
+                _context.Contact.Add(contact);
+                await _context.SaveChangesAsync();
+                return Ok(contact); //Created
+            }
+            else 
+            {
+                foreach (var item in ModelState)
+                {
+                    // пробегаемся по всем ошибкам
+                    foreach (var error in item.Value.Errors)
+                    {
+                        await Console.Out.WriteLineAsync(error.ToString());
+                    }
+                }  
+            }
+            
+            //Data.Repository.Add(contact);
 
-            return CreatedAtAction(nameof(CreateContact), new Contact { Id = contact.Id});
+            return BadRequest();
         }
 
         [HttpPut("id")]

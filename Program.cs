@@ -51,6 +51,7 @@ if (app.Environment.IsDevelopment())
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "PhoneBook v1");
         c.DisplayOperationId();
     });
+    app.UseExceptionHandler("/error-development");
 }
 else {  app.UseExceptionHandler("/error"); }
 
