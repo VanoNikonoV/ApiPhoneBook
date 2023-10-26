@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PhoneBook.Data
 {
-    public class PhoneBookContext : IdentityDbContext
+    public class PhoneBookContext : DbContext
     {
         public PhoneBookContext (DbContextOptions<PhoneBookContext> options)
             : base(options)

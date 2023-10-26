@@ -1,7 +1,8 @@
-using ApiPhoneBook.Data;
-using ApiPhoneBook.Interfaces;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using PhoneBook.Data;
+using PhoneBook.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
@@ -15,13 +16,17 @@ builder.Services.AddDbContext<PhoneBookContext>(options =>
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<Contact>();
+
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
     {
-        Title = "PhoneBook",
+        Title = "PhoneBookApi",
         Description = "Модуль по web-Api",
         Contact = new Microsoft.OpenApi.Models.OpenApiContact
         { Name = "Ivan Nikonov", Email = "cmn.nia@gmail.com" },
@@ -41,7 +46,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
