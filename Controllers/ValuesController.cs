@@ -26,7 +26,7 @@ namespace ApiPhoneBook.Controllers
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<IContact>>> GetAllContact()
+        public async Task<ActionResult<IEnumerable<Contact>>> GetAllContactAsync()
         {
             if (_context.Contact == null)
             {
@@ -45,7 +45,7 @@ namespace ApiPhoneBook.Controllers
         [HttpGet("id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<IContact>> GetContact(int id)
+        public async Task<ActionResult<IContact>> GetContactAsync(int id)
         {
             if (id == null || _context.Contact == null) return NotFound();
 
@@ -67,7 +67,7 @@ namespace ApiPhoneBook.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task <ActionResult> CreateContact([FromBody] Contact contact) 
+        public async Task <ActionResult> CreateContactAsync([FromBody] Contact contact) 
         { 
             _context.Contact.Add(contact);
             await _context.SaveChangesAsync();
@@ -83,7 +83,7 @@ namespace ApiPhoneBook.Controllers
         [HttpPut("id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> UpdateContact(int id, [FromBody] Contact contact) 
+        public async Task<ActionResult> UpdateContactAsync(int id, [FromBody] Contact contact) 
         {
             if (id != contact.Id) return BadRequest("id не совпадают");
 
@@ -115,7 +115,7 @@ namespace ApiPhoneBook.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult>DeleteContact(int id) 
+        public async Task<ActionResult> DeleteContactAsync(int id) 
         {
             if (id == default) return NoContent();
   
