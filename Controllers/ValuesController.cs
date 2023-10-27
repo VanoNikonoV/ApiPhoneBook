@@ -14,10 +14,12 @@ namespace ApiPhoneBook.Controllers
     public class ValuesController : Controller
     {
         private readonly PhoneBookContext _context;
+        private readonly ILogger<ValuesController> _logger;
 
-        public ValuesController( PhoneBookContext context)
+        public ValuesController( PhoneBookContext context, ILogger<ValuesController> logger)
         {
-           this._context = context;
+            _context = context;
+            _logger = logger;
         }
 
         /// <summary>
