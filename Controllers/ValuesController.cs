@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PhoneBook.Data;
 using PhoneBook.Models;
+using System.Diagnostics;
 using System.Net.Mime;
 
 namespace ApiPhoneBook.Controllers
 {
-    [Route("api/values")]
+    [Route("values")]
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiController]
-    public class ValuesController : Controller
+    public class ValuesController : ControllerBase
     {
         private readonly PhoneBookContext _context;
         private readonly ILogger<ValuesController> _logger;
@@ -20,6 +21,9 @@ namespace ApiPhoneBook.Controllers
         {
             _context = context;
             _logger = logger;
+           
+            //bool d =  _context.Database.EnsureCreated();
+            //Debug.WriteLine("d = " + d.ToString());
         }
 
         /// <summary>
@@ -30,10 +34,59 @@ namespace ApiPhoneBook.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Contact>>> GetAllContactAsync()
         {
+            //_context.Contact.AddRange(
+            //       new Contact
+            //       {
+            //           FirstName = "Иван",
+            //           MiddleName = "Иваныч",
+            //           LastName = "Иванов",
+            //           Telefon = "79827135444",
+            //           Address = "Москва",
+            //           Description = "Description",
+
+            //       },
+            //       new Contact
+            //       {
+            //           FirstName = "Иван",
+            //           MiddleName = "Андреевич",
+            //           LastName = "Путин",
+            //           Telefon = "79827855040",
+            //           Address = "Свердловск",
+            //           Description = "Description",
+
+            //       },
+            //       new Contact
+            //       {
+            //           FirstName = "Костя",
+            //           MiddleName = "Владимирович",
+            //           LastName = "Хмель",
+            //           Telefon = "79826665040",
+            //           Address = "Тюмень",
+            //           Description = "есть",
+            //       },
+            //       new Contact
+            //       {
+            //           FirstName = "Петр",
+            //           MiddleName = "Иваныч",
+            //           LastName = "Степанов",
+            //           Telefon = "79827135040",
+            //           Address = "Пенза",
+            //           Description = "нет",
+            //       }
+            //   );
+            //int r = await _context.SaveChangesAsync();
+
             if (_context.Contact == null)
             {
                 return Problem("Проблема с базой данных!");
             }
+
+            try
+            {
+                IEnumerable<Contact> re = await _context.Contact.ToListAsync();
+            }
+            catch (Exception ex) 
+            { Debug.WriteLine(ex.Message); }
 
             return Ok(await _context.Contact.ToListAsync());
         } 
@@ -72,7 +125,18 @@ namespace ApiPhoneBook.Controllers
         public async Task <ActionResult> CreateContactAsync([FromBody] Contact contact) 
         { 
             _context.Contact.Add(contact);
-            await _context.SaveChangesAsync();
+            try
+            {
+               int r = await _context.SaveChangesAsync();
+                Debug.WriteLine("r = " + r.ToString());
+            }
+            catch (DbUpdateException ex) { Debug.WriteLine(ex.Message); }
+
+            catch (OperationCanceledException ex) { Debug.WriteLine(ex.Message); }
+
+            catch (Exception ex)  { Debug.WriteLine(ex.Message); }
+            
+            
             return Ok(contact); //Created
         }
         

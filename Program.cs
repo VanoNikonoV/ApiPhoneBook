@@ -1,3 +1,4 @@
+using ApiPhoneBook.Middlewares;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -8,8 +9,10 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+string conetcion = builder.Configuration.GetConnectionString("PhoneBookContext");
+
 builder.Services.AddDbContext<PhoneBookContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("PhoneBookContext")
+    options.UseSqlServer(conetcion
     ?? throw new InvalidOperationException("Connection string 'PhoneBookContext' not found.")));
 
 builder.Services.AddControllers().AddNewtonsoftJson();
@@ -57,6 +60,8 @@ if (app.Environment.IsDevelopment())
     app.UseExceptionHandler("/error-development");
 }
 else {  app.UseExceptionHandler("/error"); }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
