@@ -34,7 +34,7 @@ namespace ApiPhoneBook.Middlewares
                 await HandleExceptionAsync(httpContext,
                     ex.Message,
                     HttpStatusCode.InternalServerError,
-                    "Internal server error");
+                    "Внутренняя ошибка сервера");
             }
         }
 

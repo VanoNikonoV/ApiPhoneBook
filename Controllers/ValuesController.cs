@@ -1,8 +1,10 @@
 ﻿using ApiPhoneBook.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PhoneBook.Data;
 using PhoneBook.Models;
+using System.Data;
 using System.Diagnostics;
 using System.Net.Mime;
 
@@ -12,12 +14,13 @@ namespace ApiPhoneBook.Controllers
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiController]
+    [AllowAnonymous]
     public class ValuesController : ControllerBase
     {
         private readonly PhoneBookContext _context;
         private readonly ILogger<ValuesController> _logger;
 
-        public ValuesController( PhoneBookContext context, ILogger<ValuesController> logger)
+        public ValuesController(PhoneBookContext context, ILogger<ValuesController> logger)
         {
             _context = context;
             _logger = logger;
@@ -32,6 +35,7 @@ namespace ApiPhoneBook.Controllers
         /// <returns></returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<IEnumerable<Contact>>> GetAllContactAsync()
         {
             //_context.Contact.AddRange(
@@ -83,12 +87,18 @@ namespace ApiPhoneBook.Controllers
 
             try
             {
-                IEnumerable<Contact> re = await _context.Contact.ToListAsync();
+                if (_context.Contact == null)
+                {
+                    return BadRequest();
+                }
+                
+                var list = await _context.Contact.ToListAsync();
+
+                return Ok(list);
             }
             catch (Exception ex) 
             { Debug.WriteLine(ex.Message); }
-
-            return Ok(await _context.Contact.ToListAsync());
+            return BadRequest();
         } 
 
         /// <summary>
