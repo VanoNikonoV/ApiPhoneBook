@@ -27,7 +27,7 @@ namespace ApiPhoneBook.Controllers
         }
 
         /// <summary>
-        /// Отправляет все контаткы из базы данных
+        /// Позволяет получить данные о всех контатах из базы данных
         /// </summary>
         /// <returns></returns>
         [HttpGet]
