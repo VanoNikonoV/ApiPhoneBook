@@ -12,12 +12,10 @@ namespace ApiPhoneBook.Controllers
     {
         public static User user = new User();
         private readonly IConfiguration _configuration;
-        //private readonly IUserService _userService;
 
-        public AuthenticationController(IConfiguration configuration) // IUserService userService
+        public AuthenticationController(IConfiguration configuration) 
         {
             _configuration = configuration;
-            //_userService = userService;
         }
 
         [HttpPost("register")]
