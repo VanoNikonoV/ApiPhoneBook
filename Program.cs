@@ -1,4 +1,6 @@
+using ApiPhoneBook.Data;
 using ApiPhoneBook.Middlewares;
+using ApiPhoneBook.Models;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +13,7 @@ using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +22,11 @@ string conetcion = builder.Configuration.GetConnectionString("PhoneBookContext")
 builder.Services.AddDbContext<PhoneBookContext>(options =>
     options.UseSqlServer(conetcion
     ?? throw new InvalidOperationException("Connection string 'PhoneBookContext' not found.")));
+
+string conetcion2 = builder.Configuration.GetConnectionString("UserApp");
+
+builder.Services.AddDbContext<UsersContext>(options =>
+    options.UseSqlServer(conetcion2)); 
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 

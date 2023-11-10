@@ -1,11 +1,21 @@
-﻿namespace ApiPhoneBook.Models
+﻿using System.Security.Claims;
+
+namespace ApiPhoneBook.Models
 {
     public class UserDto
     {
         /// <summary>
         /// Имя пользователя
         /// </summary>
-        public string Username { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Фамилия пользователя
+        /// </summary>
+        public string LastName { get; set; } = string.Empty;
+
+        public string Email { get; set; }
+
         /// <summary>
         /// Пароль
         /// </summary>
