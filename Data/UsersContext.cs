@@ -13,7 +13,7 @@ namespace ApiPhoneBook.Data
         public UsersContext(DbContextOptions<UsersContext> options)
         : base(options)
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -28,6 +28,8 @@ string conetcion2 = builder.Configuration.GetConnectionString("UserApp");
 builder.Services.AddDbContext<UsersContext>(options =>
     options.UseSqlServer(conetcion2)); 
 
+
+
 builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddFluentValidationAutoValidation();
