@@ -29,11 +29,11 @@ namespace ApiPhoneBook.Controllers
 
         [HttpPost("register")]
         //[ValidateAntiForgeryToken]
-        public  async Task< ActionResult<User>> Register(UserDto request)
+        public async Task<ActionResult<User>> Register(UserDto request)
         {
             if (ModelState.IsValid)
             {
-                User user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+                User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
                 if (user == null)
                 {
@@ -61,16 +61,16 @@ namespace ApiPhoneBook.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<User> Login(UserDto request)
+        public async Task<ActionResult<User>> Login(string email, string password)  //UserDto request
         {
-            User user = _context.Users.FirstOrDefault(u => u.Email == request.Email);
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
 
             if (user == null)
             {
                 return BadRequest("Пользователь не найден");
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
                 return BadRequest("Неверный пароль");
             }
