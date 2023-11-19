@@ -60,6 +60,12 @@ namespace ApiPhoneBook.Controllers
 
         }
 
+        /// <summary>
+        /// Метод проверяет наличие пользователя с данным логином, если пароли совпадаю отправляет jwt-токен
+        /// </summary>
+        /// <param name="email">логин пользователя</param>
+        /// <param name="password">пароль пользователя</param>
+        /// <returns>jwt-токен в string</returns>
         [HttpPost("login")]
         public async Task<ActionResult<User>> Login(string email, string password)  //UserDto request
         {
@@ -100,7 +106,6 @@ namespace ApiPhoneBook.Controllers
             return jwt;
         }
 
-
         private ClaimsIdentity GetIdentity(User user)
         {
             User user_ = _context.Users.FirstOrDefault(u => u.Email == user.Email); 
@@ -122,20 +127,5 @@ namespace ApiPhoneBook.Controllers
             return null;
         }
 
-
-        private async Task Authenticate(User user)
-        {
-            // создаем один claim
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimsIdentity.DefaultNameClaimType, user.Email),
-                //new Claim(ClaimsIdentity.DefaultRoleClaimType, user.Role?.Name)
-            };
-            // создаем объект ClaimsIdentity
-            ClaimsIdentity id = new ClaimsIdentity(claims, "ApplicationCookie", ClaimsIdentity.DefaultNameClaimType,
-                ClaimsIdentity.DefaultRoleClaimType);
-            // установка аутентификационных куки
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id));
-        }
     }
 }
