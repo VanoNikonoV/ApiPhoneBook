@@ -26,7 +26,7 @@ builder.Services.AddDbContext<PhoneBookContext>(options =>
 string conetcion2 = builder.Configuration.GetConnectionString("UserApp");
 
 builder.Services.AddDbContext<UsersContext>(options =>
-    options.UseSqlServer(conetcion2)); 
+    options.UseSqlite(conetcion2)); 
 
 
 builder.Services.AddControllers().AddNewtonsoftJson();
@@ -85,7 +85,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage();
+    app.UseDeveloperExceptionPage()
     app.UseSwagger();
     app.UseSwaggerUI(c=>
     {
