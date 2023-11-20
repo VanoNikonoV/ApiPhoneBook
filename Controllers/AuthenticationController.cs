@@ -1,24 +1,20 @@
 ﻿using ApiPhoneBook.Data;
 using ApiPhoneBook.Models;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using PhoneBook.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System;
-using Azure.Core;
 
 namespace ApiPhoneBook.Controllers
 {
+    [Route("authentication")]
+    [ApiController]
     public class AuthenticationController : Controller
     {
         private readonly UsersContext _context;
-        public static User user = new User();
+        
         private readonly IConfiguration _configuration;
 
         public AuthenticationController(IConfiguration configuration, UsersContext context) 
@@ -28,7 +24,6 @@ namespace ApiPhoneBook.Controllers
         }
 
         [HttpPost("register")]
-        //[ValidateAntiForgeryToken]
         public async Task<ActionResult<User>> Register(UserDto request)
         {
             if (ModelState.IsValid)
@@ -63,20 +58,19 @@ namespace ApiPhoneBook.Controllers
         /// <summary>
         /// Метод проверяет наличие пользователя с данным логином, если пароли совпадаю отправляет jwt-токен
         /// </summary>
-        /// <param name="email">логин пользователя</param>
-        /// <param name="password">пароль пользователя</param>
+        /// <param name="request"> Модель запроса с логином пользователя и паролем</param>
         /// <returns>jwt-токен в string</returns>
         [HttpPost("login")]
-        public async Task<ActionResult<User>> Login(string email, string password)  //UserDto request
+        public async Task<ActionResult<User>> Login(RequestLogin request)
         {
-            User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
             {
                 return BadRequest("Пользователь не найден");
             }
 
-            if (!BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash))
             {
                 return BadRequest("Неверный пароль");
             }
