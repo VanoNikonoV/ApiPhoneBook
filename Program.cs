@@ -67,6 +67,7 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
     options.RequireHttpsMetadata = false;
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
         // укзывает, будет ли валидироваться издатель при валидации токена
@@ -85,13 +86,6 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
         IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
         // валидация ключа безопасности
         ValidateIssuerSigningKey = true,
-
-
-        //ValidateIssuerSigningKey = true,
-        //ValidateAudience = false,
-        //ValidateIssuer = false,
-        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-        //        builder.Configuration.GetSection("AppSettings:Token").Value!))
     };
 });
 
