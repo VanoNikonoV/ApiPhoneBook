@@ -84,14 +84,19 @@ namespace ApiPhoneBook.Controllers
         {
             var identity = GetIdentity(user);
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _configuration.GetSection("AppSettings:Token").Value!));
+            //var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            //    _configuration.GetSection("AppSettings:Token").Value!));
 
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var creds = new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha512Signature);
+
+            DateTime now = DateTime.UtcNow;
 
             var token = new JwtSecurityToken(
+                    issuer: AuthOptions.ISSUER,
+                    audience: AuthOptions.AUDIENCE,
+                    notBefore: now,
                     claims: identity.Claims,
-                    expires: DateTime.Now.AddDays(1),
+                    expires: now.Add(TimeSpan.FromMinutes(AuthOptions.LIFETIME)),
                     signingCredentials: creds
                 );
 

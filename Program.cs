@@ -4,7 +4,6 @@ using ApiPhoneBook.Models;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PhoneBook.Data;
@@ -13,7 +12,6 @@ using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +21,8 @@ builder.Services.AddDbContext<PhoneBookContext>(options =>
     options.UseSqlServer(conetcion
     ?? throw new InvalidOperationException("Connection string 'PhoneBookContext' not found.")));
 
-string conetcion2 = builder.Configuration.GetConnectionString("UserApp");
-
 builder.Services.AddDbContext<UsersContext>(options =>
-    options.UseSqlite(conetcion2)); 
+    options.UseSqlite("Data Source=userApp.db")); 
 
 
 builder.Services.AddControllers().AddNewtonsoftJson();
@@ -70,22 +66,40 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
+    options.RequireHttpsMetadata = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
+        // укзывает, будет ли валидироваться издатель при валидации токена
+        ValidateIssuer = true,
+        // строка, представляющая издателя
+        ValidIssuer = AuthOptions.ISSUER,
+
+        // будет ли валидироваться потребитель токена
+        ValidateAudience = true,
+        // установка потребителя токена
+        ValidAudience = AuthOptions.AUDIENCE,
+        // будет ли валидироваться время существования
+        ValidateLifetime = true,
+
+        // установка ключа безопасности
+        IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+        // валидация ключа безопасности
         ValidateIssuerSigningKey = true,
-        ValidateAudience = false,
-        ValidateIssuer = false,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                builder.Configuration.GetSection("AppSettings:Token").Value!))
+
+
+        //ValidateIssuerSigningKey = true,
+        //ValidateAudience = false,
+        //ValidateIssuer = false,
+        //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+        //        builder.Configuration.GetSection("AppSettings:Token").Value!))
     };
 });
 
 var app = builder.Build();
 
-
 if (app.Environment.IsDevelopment())
 {
-    app.UseDeveloperExceptionPage()
+    app.UseDeveloperExceptionPage();
     app.UseSwagger();
     app.UseSwaggerUI(c=>
     {
@@ -99,6 +113,8 @@ else {  app.UseExceptionHandler("/error"); }
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
+
+    app.UseAuthentication();
 
 app.UseAuthorization();
 
