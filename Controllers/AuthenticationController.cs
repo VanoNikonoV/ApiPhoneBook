@@ -22,7 +22,11 @@ namespace ApiPhoneBook.Controllers
             _configuration = configuration;
             _context = context;
         }
-
+        /// <summary>
+        /// Метод регистрации пользователя, добавляет пользователя в базу данных
+        /// </summary>
+        /// <param name="request">Даннные пользователя</param>
+        /// <returns></returns>
         [HttpPost("register")]
         public async Task<ActionResult<User>> Register(UserDto request)
         {
@@ -48,8 +52,7 @@ namespace ApiPhoneBook.Controllers
 
                     return Ok();
                 }
-                else
-                    ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                else ModelState.AddModelError("", "Некорректные логин и(или) пароль");
             }
             return View(request);
 
