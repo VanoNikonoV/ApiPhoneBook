@@ -60,14 +60,13 @@ namespace ApiPhoneBook.Controllers
         [HttpGet("id")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [Authorize(Roles = "Admin,User")]
         public async Task<ActionResult<IContact>> GetContactAsync(int id)
         {
             if (id == null || _context.Contact == null) return NotFound();
 
             var contact = await _context.Contact.FirstOrDefaultAsync(m => m.Id == id);
-
-            //var contact = Data.Repository.Get(id);
 
             if (id < 0) { throw new ArgumentException("Значение ниже 0", nameof(id)); }
 
