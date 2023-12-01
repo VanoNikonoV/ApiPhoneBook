@@ -154,9 +154,8 @@ namespace ApiPhoneBook.Controllers
             {
                 _context.Contact.Remove(contact);
                 await _context.SaveChangesAsync();
-                return Ok();
             }
-            return NotFound();
+            return Ok();
         }
 
         private bool ContactExists(int id)
