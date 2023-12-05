@@ -13,7 +13,6 @@ namespace ApiPhoneBook.Controllers
     [Produces(MediaTypeNames.Application.Json)]
     [Consumes(MediaTypeNames.Application.Json)]
     [ApiController]
-    
     public class ValuesController : ControllerBase
     {
         private readonly PhoneBookContext _context;
@@ -85,11 +84,10 @@ namespace ApiPhoneBook.Controllers
         [Authorize(Roles = "Admin,User")]
         public async Task <ActionResult> CreateContactAsync([FromBody] Contact contact) 
         { 
-            _context.Contact.Add(contact);
             try
             {
-               int r = await _context.SaveChangesAsync();
-                Debug.WriteLine("r = " + r.ToString());
+                _context.Contact.Add(contact);
+                await _context.SaveChangesAsync();             
             }
             catch (DbUpdateException ex) { Debug.WriteLine(ex.Message); }
 

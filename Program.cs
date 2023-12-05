@@ -11,7 +11,6 @@ using PhoneBook.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +22,6 @@ builder.Services.AddDbContext<PhoneBookContext>(options =>
 
 builder.Services.AddDbContext<UsersContext>(options =>
     options.UseSqlite("Data Source=userApp.db")); 
-
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
@@ -108,7 +106,7 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
-    app.UseAuthentication();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
