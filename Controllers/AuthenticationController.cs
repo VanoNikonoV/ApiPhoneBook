@@ -1,5 +1,6 @@
 ﻿using ApiPhoneBook.Data;
 using ApiPhoneBook.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -66,12 +67,14 @@ namespace ApiPhoneBook.Controllers
         {
             User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
 
+            bool verified = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
+
             if (user == null)
             {
                 return BadRequest("Пользователь не найден");
             }
 
-            if (request.PasswordHash != user.PasswordHash)
+            if (!verified)
             {
                 return BadRequest("Неверный пароль");
             }
