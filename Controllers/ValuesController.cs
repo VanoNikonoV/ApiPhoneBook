@@ -80,22 +80,30 @@ namespace ApiPhoneBook.Controllers
         /// <param name="contact">Новый контакт</param>
         /// <returns></returns>
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [Authorize(Roles = "Admin,User")]
         public async Task <ActionResult> CreateContactAsync([FromBody] Contact contact) 
         { 
             try
             {
-                _context.Contact.Add(contact);
-                await _context.SaveChangesAsync();             
+                var isContact = await _context.Contact.FindAsync(contact.Id);
+
+                if (isContact != null) return BadRequest("Уже существует");
+
+                else
+                {
+                    _context.Contact.Add(contact);
+
+                    await _context.SaveChangesAsync();
+
+                    return Created("~/values/" + contact.Id, contact);
+                }
+
             }
-            catch (DbUpdateException ex) { Debug.WriteLine(ex.Message); }
+            catch (DbUpdateException ex) { return BadRequest("Проблема с базой данных"); }
 
-            catch (OperationCanceledException ex) { Debug.WriteLine(ex.Message); }
-
-            catch (Exception ex)  { Debug.WriteLine(ex.Message); }
-            
-            return Ok(contact); //Created
+            catch (OperationCanceledException ex) { return BadRequest("Кто-то еще добавяет"); }
         }
         
         /// <summary>

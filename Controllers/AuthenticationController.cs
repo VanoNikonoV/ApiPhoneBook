@@ -29,32 +29,29 @@ namespace ApiPhoneBook.Controllers
         /// <param name="request">Даннные пользователя</param>
         /// <returns></returns>
         [HttpPost("register")]
-        public async Task<ActionResult<User>> Register(UserDto request)
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult> Register(UserDto request)
         {
-            if (ModelState.IsValid)
+            User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
+
+            if (user == null)
             {
-                User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-
-                if (user == null)
-                {
-                    User _user = new User();
+                User _user = new User();
                     
-                    _user.FirstName = request.FirstName;
-                    _user.LastName = request.LastName;
-                    _user.PasswordHash = request.PasswordHash;
-                    _user.Email = request.Email;
-                    _user.RoleId = 2;
+                _user.FirstName = request.FirstName;
+                _user.LastName = request.LastName;
+                _user.PasswordHash = request.PasswordHash;
+                _user.Email = request.Email;
+                _user.RoleId = 2;
      
-                    await _context.Users.AddAsync(_user);
+                await _context.Users.AddAsync(_user);
 
-                    await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
-                    return Ok();
-                }
-                else ModelState.AddModelError("", "Некорректные логин и(или) пароль");
+                return Ok();
             }
-            return View(request);
-
+            else return BadRequest("Пользователь уже существует");
         }
 
         /// <summary>
@@ -63,16 +60,18 @@ namespace ApiPhoneBook.Controllers
         /// <param name="request"> Модель запроса с логином пользователя и паролем</param>
         /// <returns>jwt-токен в string</returns>
         [HttpPost("login")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<User>> Login(RequestLogin request)
         {
             User user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
-
-            bool verified = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
 
             if (user == null)
             {
                 return BadRequest("Пользователь не найден");
             }
+
+            bool verified = BCrypt.Net.BCrypt.Verify(request.Password, user.PasswordHash);
 
             if (!verified)
             {

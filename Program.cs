@@ -1,13 +1,10 @@
 using ApiPhoneBook.Data;
 using ApiPhoneBook.Middlewares;
 using ApiPhoneBook.Models;
-using FluentValidation;
-using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PhoneBook.Data;
-using PhoneBook.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
@@ -24,10 +21,6 @@ builder.Services.AddDbContext<UsersContext>(options =>
     options.UseSqlite("Data Source=userApp.db")); 
 
 builder.Services.AddControllers().AddNewtonsoftJson();
-
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddFluentValidationClientsideAdapters();
-builder.Services.AddValidatorsFromAssemblyContaining<Contact>();
 
 builder.Services.AddEndpointsApiExplorer();
 
